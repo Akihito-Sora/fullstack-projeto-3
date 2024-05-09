@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useHomeContext } from "../../hooks/useHomeContext";
 import { Domain } from "../components/Domain";
+import { ToastContainer, toast } from "react-toastify";
 import {
   Button,
   Field,
@@ -23,13 +24,19 @@ const Home = () => {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: {  isSubmitting },
   } = useForm();
 
   const onSubmit = async ({ domain }) => {
-    await searchDomain(domain);
-    reset();
+    try {
+      await searchDomain(domain);
+      reset();
+    } catch {
+      notify("Campo de domínio obrigatório.");
+    }
   };
+
+  const notify = (errorMessage) => toast(errorMessage);
 
   return (
     <Page>
@@ -51,11 +58,8 @@ const Home = () => {
                 <SearchInput
                   type="text"
                   placeholder="domínio"
-                  {...register("domain", { required: true })}
-                />
-                {errors.domain && (
-                  <ErrorMessage>Campo de domínio obrigatório</ErrorMessage>
-                )}
+                  {...register("domain")}
+                />               
               </Field>
               <Button type="submit" disabled={isSubmitting}>
                 consultar
